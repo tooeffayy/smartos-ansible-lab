@@ -1,0 +1,53 @@
+include: "/etc/unbound/unbound.conf.d/*.conf"
+
+stub-zone:
+	name: {{ forward_domain_name }}
+	stub-addr: {{ stub_addr }}
+
+server:
+	interface: {{ ansible_default_ipv4.address }}
+	interface: 127.0.0.1
+	port: 53
+
+	access-control: 10.20.0.0/16 allow_snoop
+	access-control: 127.0.0.0/8 allow_snoop
+
+	hide-identity: yes
+	hide-version: yes
+	harden-algo-downgrade: yes
+	unwanted-reply-threshold: 10000000
+
+	prefetch: yes
+		
+	do-ip4: yes
+	do-ip6: no
+	do-udp: yes
+	do-tcp: yes
+
+	verbosity: 1
+	logfile: "/var/log/unbound/unbound.log"
+	tls-cert-bundle: /etc/ssl/certs/ca-certificates.crt
+
+	do-not-query-localhost: no
+	infra-host-ttl: 10
+	
+	private-domain: {{ forward_domain_name }}
+	domain-insecure: {{ forward_domain_name }}
+	domain-insecure: "{{ reverse_domain_name }}"
+	local-zone: {{ forward_domain_name }} transparent	
+	local-zone: "{{ reverse_domain_name }}" transparent	
+
+remote-control:
+	control-enable: yes
+	control-interface: 127.0.0.1
+	control-port: 8953
+	server-key-file: "unbound_server.key"
+	server-cert-file: "unbound_server.pem"
+	control-key-file: "unbound_control.key"
+	control-cert-file: "unbound_control.pem"
+
+forward-zone:
+	name: "."
+	forward-tls-upstream: yes
+	forward-addr: 9.9.9.9@853#dns.quad9.net
+	forward-addr: 149.112.112.112@853#dns.quad9.net

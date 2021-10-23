@@ -1,0 +1,20 @@
+- hosts: smartos
+  roles:
+    - role: zone
+      host_name: "ns1"
+      current_state: present
+      ram_mb: 1024
+      vcpus: 1
+      resolvers: [ "9.9.9.9" ]
+      nics:
+      - nic_tag: 'admin'
+        gateway: 10.10.1.1
+        ip: 10.10.1.5
+        netmask: 255.255.255.0
+        primary: yes
+
+- hosts: nameservers
+  roles:
+   - role: dns
+     forward_domain_name: "lab.example.com"
+     reverse_domain_name: "1.10.10.in-addr.arpa."

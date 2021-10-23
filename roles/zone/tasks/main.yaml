@@ -1,0 +1,20 @@
+- name: import image
+  community.general.imgadm:
+    uuid: "{{ joyent_uuid }}"
+    state: imported
+
+- name: create  zone
+  community.general.vmadm:
+    brand: joyent
+    state: "{{ current_state }}"
+    alias: "{{ host_name }}"
+    hostname: "{{ host_name }}"
+    image_uuid: "{{ joyent_uuid }}"
+    ram: " {{ ram_mb }}"
+    resolvers: "{{ resolvers }}"
+    nics: "{{ nics }}"
+    #kernel_version: 4.3.0
+    customer_metadata:
+      root_authorized_keys: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+      user-script: "/usr/sbin/mdata-get root_authorized_keys > ~root/.ssh/authorized_keys"
+

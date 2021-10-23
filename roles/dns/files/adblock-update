@@ -1,0 +1,9 @@
+#!/usr/bin/env sh
+
+URL="https://abp.oisd.nl/"
+
+wget -q $URL -O - | grep "||" | sed 's/^../local-zone:\ "/;s/.$/" always\_nxdomain/' > /tmp/adblock-unbound
+
+mv /tmp/adblock-unbound /etc/unbound/unbound.conf.d/ads.conf
+
+unbound-control reload
