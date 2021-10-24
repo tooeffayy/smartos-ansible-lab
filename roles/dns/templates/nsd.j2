@@ -1,0 +1,52 @@
+include: "/etc/nsd/nsd.conf.d/*.conf"
+
+server:
+    ip-address: 0.0.0.0
+    port: 5353
+    ip4-only: yes
+    hide-version: yes
+    identity: ""
+    zonesdir: "/opt/local/etc/nsd"
+    database: "/var/nsd/nsd.db"
+    verbosity: 1
+    logfile: "/var/log/nsd.log"
+
+remote-control:
+    control-enable: yes
+    control-interface: 127.0.0.1
+    control-port: 8952
+    server-key-file: "nsd_server.key"
+    server-cert-file: "nsd_server.pem"
+    control-key-file: "nsd_control.key"
+    control-cert-file: "nsd_control.pem"
+
+key:
+    name: "{{ nsd_secret_name }}"
+    algorithm: hmac-sha256
+    secret: "{{ nsd_secret }}"
+
+zone:
+    name: "{{ forward_domain_name }}"
+    zonefile: "{{ forward_domain_name }}.zone"
+    {% if nsd_zone_transfer == yes -%}
+    {% if nsd_primary == yes -%}}
+    notify: {{ secondary_name_server }}@{{ secondary_name_server_port }} labkey
+    provide-xfr: {{ secondary_name_server }} labkey  
+    {% else -%}
+    allow-notify: {{ primary_name_server }} labkey
+    request-xfr: AXFR {{ primary_name_server }}@{{ primary_name_server_port }} labkey
+    {% endif %}
+    {% endif %}
+
+zone:
+    name: {{ reverse_domain_name }}.in-addr.arpa"
+    zonefile: "{{ reverse_domain_name }}.zone"
+    {% if nsd_zone_transfer == yes -%}
+    {% if nsd_primary == yes -%}}
+    notify: {{ secondary_name_server }}@{{ secondary_name_server_port }} labkey
+    provide-xfr: {{ secondary_name_server }} labkey  
+    {% else -%}
+    allow-notify: {{ primary_name_server }} labkey
+    request-xfr: AXFR {{ primary_name_server }}@{{ primary_name_server_port }} labkey
+    {% endif %}
+    {% endif %}

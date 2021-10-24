@@ -35,7 +35,7 @@ server:
 	domain-insecure: {{ forward_domain_name }}
 	domain-insecure: "{{ reverse_domain_name }}"
 	local-zone: {{ forward_domain_name }} transparent	
-	local-zone: "{{ reverse_domain_name }}" transparent	
+	local-zone: "{{ reverse_domain_name }}.in-addr.arpa." transparent	
 
 remote-control:
 	control-enable: yes

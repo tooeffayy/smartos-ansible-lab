@@ -1,32 +1,42 @@
-- name: Update package cache
+- name: general | Update package cache
   community.general.pkgin:
     update_cache: yes
   
-- name: Full package upgrade
+- name: general | Full package upgrade
   community.general.pkgin:
     full_upgrade: yes
 
-- name: Install packages
+- name: general | Install packages
   command:
     cmd: /opt/local/bin/pkgin -y in ca-certificates nsd unbound
 
-- name: Unbound control setup
+- name: unbound | Unbound control setup
   command:
     cmd: /opt/local/sbin/unbound-control-setup
 
-- name: Copy main Unbound configuration file
+- name: nsd | nsd control setup
+  command:
+    cmd: /opt/local/sbin/nsd-control-setup
+
+- name: unbound | Copy main Unbound configuration file
   template:
     mode: 0644
     src: unbound.j2
     dest: /opt/local/etc/unbound/unbound.conf
 
-- name: Copy adblock script
+- name: nsd | copy main nsd config file
+  template:
+    mode: 0644
+    src: nsd.j2
+    dest: /opt/local/etc/nsd/nsd.conf
+
+- name: unbound | Copy adblock script
   copy:
     mode: 0644
     src: adblock-update
     dest: /opt/local/bin/adblock-update
 
-- name: Create log directory
+- name: unbound | Create unbound log directory
   file:
     mode: 0755
     path: /var/log/unbound
@@ -34,10 +44,14 @@
     owner: unbound
     group: unbound
 
-- name: Start Unbound
+- name: unbound | Start Unbound
   service:
     name: unbound
     state: restarted
     enabled: yes
 
-
+- name: nsd | Start nsd
+  service:
+    name: nsd
+    state: restarted
+    enabled: yes
