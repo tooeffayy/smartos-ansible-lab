@@ -3,14 +3,14 @@
     uuid: "{{ joyent_uuid }}"
     state: imported
 
-- name: create  zone
+- name: create zone
   community.general.vmadm:
     brand: joyent
     state: "{{ current_state }}"
     alias: "{{ host_name }}"
     hostname: "{{ host_name }}"
     image_uuid: "{{ joyent_uuid }}"
-    ram: " {{ ram_mb }}"
+    ram: "{{ ram_mb }}"
     resolvers: "{{ resolvers }}"
     nics: "{{ nics }}"
     #kernel_version: 4.3.0

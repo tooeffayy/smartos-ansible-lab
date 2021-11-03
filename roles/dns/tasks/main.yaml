@@ -8,15 +8,18 @@
 
 - name: general | Install packages
   command:
-    cmd: /opt/local/bin/pkgin -y in ca-certificates nsd unbound
+    cmd: /opt/local/bin/pkgin -y install ca-certificates nsd unbound
+  when: new_nameserver | bool
 
 - name: unbound | Unbound control setup
   command:
     cmd: /opt/local/sbin/unbound-control-setup
+  when: new_nameserver | bool
 
 - name: nsd | nsd control setup
   command:
     cmd: /opt/local/sbin/nsd-control-setup
+  when: new_nameserver | bool
 
 - name: unbound | Copy main Unbound configuration file
   template:
@@ -24,7 +27,7 @@
     src: unbound.j2
     dest: /opt/local/etc/unbound/unbound.conf
 
-- name: nsd | copy main nsd config file
+- name: nsd | Copy main nsd config file
   template:
     mode: 0644
     src: nsd.j2
@@ -36,6 +39,13 @@
     src: adblock-update
     dest: /opt/local/bin/adblock-update
 
+- name: unbound | Create cron job for adblock updates
+  cron:
+    name: "Update adblock list"
+    hour: "1"
+    minute: "0"
+    job: "/opt/local/bin/adblock-update"
+
 - name: unbound | Create unbound log directory
   file:
     mode: 0755
@@ -43,6 +53,19 @@
     state: directory
     owner: unbound
     group: unbound
+  when: new_nameserver | bool
+
+- name: nsd | Copy forward zone file
+  copy:
+    mode: 0644
+    src: "{{ forward_domain_zone }}"
+    dest: /opt/local/etc/nsd/{{ forward_domain_zone }}
+
+- name: nsd | Copy reverse zone file
+  copy:
+    mode: 0644
+    src: "{{ reverse_domain_zone }}"
+    dest: /opt/local/etc/nsd/{{ reverse_domain_zone }}
 
 - name: unbound | Start Unbound
   service:

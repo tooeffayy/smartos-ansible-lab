@@ -1,4 +1,4 @@
-include: "/etc/unbound/unbound.conf.d/*.conf"
+include: "/opt/local/etc/unbound/unbound.conf.d/*.conf"
 
 stub-zone:
 	name: {{ forward_domain_name }}
@@ -51,3 +51,4 @@ forward-zone:
 	forward-tls-upstream: yes
 	forward-addr: 9.9.9.9@853#dns.quad9.net
 	forward-addr: 149.112.112.112@853#dns.quad9.net
+	

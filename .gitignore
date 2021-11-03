@@ -1,3 +1,4 @@
 hosts
-dns.yml
+lab.yml
 zones.yml
+*.zone
