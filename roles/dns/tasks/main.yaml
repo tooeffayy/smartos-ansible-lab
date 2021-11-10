@@ -35,7 +35,7 @@
 
 - name: unbound | Copy adblock script
   copy:
-    mode: 0644
+    mode: 0755
     src: adblock-update
     dest: /opt/local/bin/adblock-update
 
@@ -48,9 +48,9 @@
 
 - name: unbound | Create unbound log directory
   file:
-    mode: 0755
-    path: /var/log/unbound
-    state: directory
+    mode: 0644
+    path: /opt/local/etc/unbound/unbound.log
+    state: file
     owner: unbound
     group: unbound
   when: new_nameserver | bool

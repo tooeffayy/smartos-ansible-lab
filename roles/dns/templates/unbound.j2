@@ -1,5 +1,3 @@
-include: "/opt/local/etc/unbound/unbound.conf.d/*.conf"
-
 stub-zone:
 	name: {{ forward_domain_name }}
 	stub-addr: {{ stub_addr }}
@@ -25,7 +23,7 @@ server:
 	do-tcp: yes
 
 	verbosity: 1
-	logfile: "/var/log/unbound/unbound.log"
+	logfile: "unbound.log"
 	tls-cert-bundle: /etc/ssl/certs/ca-certificates.crt
 
 	do-not-query-localhost: no
@@ -35,7 +33,9 @@ server:
 	domain-insecure: {{ forward_domain_name }}
 	domain-insecure: "{{ reverse_domain_name }}"
 	local-zone: {{ forward_domain_name }} transparent	
-	local-zone: "{{ reverse_domain_name }}.in-addr.arpa." transparent	
+	local-zone: "{{ reverse_domain_name }}.in-addr.arpa." transparent
+
+	include: "/opt/local/etc/unbound/unbound.conf.d/*.conf"	
 
 remote-control:
 	control-enable: yes
